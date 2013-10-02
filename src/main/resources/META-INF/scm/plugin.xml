@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+
+  <information>
+    <author>Clemens Rabe</author>
+    <groupId>${project.groupId}</groupId>
+    <artifactId>${project.artifactId}</artifactId>
+    <version>${project.version}</version>
+    <name>${project.name}</name>
+    <description>${project.description}</description>
+    <url>${project.url}</url>
+    <category>Authentication</category>
+  </information>
+
+  <conditions>
+    <min-version>${project.parent.version}</min-version>
+  </conditions>
+
+  <packages>
+    <package>sonia.scm.plugins.autologin</package>
+  </packages>
+
+  <resources>
+    <script>/scm/conf.autologin.js</script>
+  </resources>
+
+</plugin>
