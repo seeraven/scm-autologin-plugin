@@ -42,7 +42,6 @@ import com.google.inject.Singleton;
 
 import sonia.scm.plugin.ext.Extension;
 import sonia.scm.user.User;
-import sonia.scm.user.UserManager;
 import sonia.scm.web.filter.AutoLoginModule;
 
 /**
@@ -109,7 +108,7 @@ public class AutoLoginAuthenticationFilter implements AutoLoginModule
       } catch (AuthenticationException ex)
       {
         logger.warn("Can't login user '" + remoteUser + "' with password '"
-            + AutoLoginAuthenticationHandler.USERPASS + "'");
+            + config.getPassword() + "'");
       }
     } else
     {

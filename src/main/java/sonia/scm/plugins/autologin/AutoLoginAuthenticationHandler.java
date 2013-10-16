@@ -62,9 +62,6 @@ import sonia.scm.store.StoreFactory;
 public class AutoLoginAuthenticationHandler implements AuthenticationHandler
 {
 
-  /** The password used by the AutoLoginAuthenticationFilter. */
-  public static final String USERPASS = "autoLogin";
-
   /** The authentication type. */
   public static final String TYPE = "autoLogin";
 
@@ -227,7 +224,7 @@ public class AutoLoginAuthenticationHandler implements AuthenticationHandler
     user.setName(username);
     user.setDisplayName(username);
     user.setMail(username + "@" + config.getEmailDomain());
-    user.setPassword(USERPASS);
+    user.setPassword(config.getPassword());
 
     return user;
   }

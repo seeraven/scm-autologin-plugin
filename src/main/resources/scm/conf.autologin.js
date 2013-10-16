@@ -41,7 +41,7 @@ registerGeneralConfigPanel({
 	        {
 	        	xtype:      'textfield',
 	        	fieldLabel: 'Password',
-	        	name:       'variable-name',
+	        	name:       'password',
 	        	helpText:   'The password used for auto login attempts. Existing users must have this password or they will not be able to auto login.',
 	        	allowBlank: false
 	        },
