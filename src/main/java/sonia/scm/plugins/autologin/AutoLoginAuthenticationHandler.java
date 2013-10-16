@@ -48,6 +48,7 @@ import sonia.scm.web.security.AuthenticationState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import sonia.scm.security.EncryptionHandler;
 import sonia.scm.store.Store;
 import sonia.scm.store.StoreFactory;
 
@@ -78,6 +79,9 @@ public class AutoLoginAuthenticationHandler implements AuthenticationHandler
   /** The user manager. */
   private UserManager userManager;
 
+  /** Encryption handler. */
+  private EncryptionHandler encryptionHandler;
+
   /**
    * Constructor.
    * 
@@ -88,9 +92,10 @@ public class AutoLoginAuthenticationHandler implements AuthenticationHandler
    */
   @Inject
   public AutoLoginAuthenticationHandler(UserManager userManager,
-      StoreFactory storeFactory)
+      EncryptionHandler encryptionHandler, StoreFactory storeFactory)
   {
     this.userManager = userManager;
+    this.encryptionHandler = encryptionHandler;
     store = storeFactory.getStore(AutoLoginConfig.class, TYPE);
   }
 
@@ -122,7 +127,8 @@ public class AutoLoginAuthenticationHandler implements AuthenticationHandler
   @Override
   public String getType()
   {
-    return userManager.getDefaultType();
+    return TYPE;
+    // return userManager.getDefaultType();
   }
 
   @Override
@@ -139,16 +145,27 @@ public class AutoLoginAuthenticationHandler implements AuthenticationHandler
 
       if (user != null)
       {
-        // Login user without a password.
-        if (logger.isDebugEnabled())
+        if (TYPE.equals(user.getType()))
         {
-          logger.debug(
-              "user {} successfully authenticated by auto login plugin",
-              username);
-        }
+          // Login user without a password.
+          if (logger.isDebugEnabled())
+          {
+            logger.debug(
+                "user {} successfully authenticated by auto login plugin",
+                username);
+          }
 
-        user.setPassword(null);
-        result = new AuthenticationResult(user, AuthenticationState.SUCCESS);
+          user.setPassword(null);
+          result = new AuthenticationResult(user, AuthenticationState.SUCCESS);
+        } else
+        {
+          if (logger.isDebugEnabled())
+          {
+            logger.debug("{} is not an {} user", username, TYPE);
+          }
+
+          result = AuthenticationResult.NOT_FOUND;
+        }
       } else if (config.getAllowUnknown())
       {
         // Create user when enabled
@@ -224,7 +241,12 @@ public class AutoLoginAuthenticationHandler implements AuthenticationHandler
     user.setName(username);
     user.setDisplayName(username);
     user.setMail(username + "@" + config.getEmailDomain());
-    user.setPassword(config.getPassword());
+
+    // Encrypt password
+    String encryptedPassword = encryptionHandler.encrypt(config.getPassword());
+    user.setPassword(encryptedPassword);
+
+    user.setType(TYPE);
 
     return user;
   }

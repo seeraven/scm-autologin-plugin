@@ -59,8 +59,8 @@ public class AutoLoginAuthenticationFilter implements AutoLoginModule
   private static final Logger logger = LoggerFactory
       .getLogger(AutoLoginAuthenticationFilter.class);
 
-  /** the configuration of the plugin */
-  private AutoLoginConfig config;
+  /** the handler to get the configuration of the plugin */
+  private AutoLoginAuthenticationHandler authenticationHandler;
 
   /**
    * Constructor of the authentication filter.
@@ -71,9 +71,10 @@ public class AutoLoginAuthenticationFilter implements AutoLoginModule
    *          - The configuration of the plugin.
    */
   @Inject
-  public AutoLoginAuthenticationFilter(AutoLoginConfig pluginConfiguration)
+  public AutoLoginAuthenticationFilter(
+      AutoLoginAuthenticationHandler authenticationHandler)
   {
-    this.config = pluginConfiguration;
+    this.authenticationHandler = authenticationHandler;
   }
 
   /**
@@ -92,28 +93,31 @@ public class AutoLoginAuthenticationFilter implements AutoLoginModule
   public User authenticate(HttpServletRequest request,
       HttpServletResponse response, Subject subject)
   {
-    String headerValue = request.getHeader(config.getVariableName());
+    String headerValue = request.getHeader(authenticationHandler.getConfig()
+        .getVariableName());
     User user = null;
 
     if (headerValue != null)
     {
       String remoteUser = AutoLoginHelper.extractUsername(headerValue);
-      logger.debug(config.getVariableName() + " => " + remoteUser);
+      logger.debug(authenticationHandler.getConfig().getVariableName() + " => "
+          + remoteUser);
 
       try
       {
         subject.login(new UsernamePasswordToken(remoteUser,
-            config.getPassword(), request.getRemoteAddr()));
+            authenticationHandler.getConfig().getPassword(), request
+                .getRemoteAddr()));
         user = subject.getPrincipals().oneByType(User.class);
       } catch (AuthenticationException ex)
       {
         logger.warn("Can't login user '" + remoteUser + "' with password '"
-            + config.getPassword() + "'");
+            + authenticationHandler.getConfig().getPassword() + "'");
       }
     } else
     {
       logger.debug("Can't determine auto login using http header variable "
-          + config.getVariableName());
+          + authenticationHandler.getConfig().getVariableName());
     }
 
     if (user != null)
