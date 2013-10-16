@@ -44,74 +44,107 @@ import com.google.inject.Singleton;
 @Singleton
 @XmlRootElement(name = "config")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AutoLoginConfig {
+public class AutoLoginConfig
+{
 
-	@XmlElement(name = "variable-name")
-	private String variableName = "X_REMOTE_USER";
+  @XmlElement(name = "variable-name")
+  private String variableName = "X_REMOTE_USER";
 
-	@XmlElement(name = "allow-unknown")
-	private boolean allowUnknown = true;
+  @XmlElement(name = "password")
+  private String password = "autoLogin";
 
-	@XmlElement(name = "email-domain")
-	private String emailDomain = "example.com";
+  @XmlElement(name = "allow-unknown")
+  private boolean allowUnknown = true;
 
-	/**
-	 * Get the name of the HTTP header variable containing the user name.
-	 * 
-	 * @return The name of the HTTP header variable containing the user name.
-	 */
-	public String getVariableName() {
-		return variableName;
-	}
+  @XmlElement(name = "email-domain")
+  private String emailDomain = "example.com";
 
-	/**
-	 * Set the name of the HTTP header variable containing the user name.
-	 * 
-	 * @param variableName
-	 *            - The name of the HTTP header variable.
-	 */
-	public void setVariableName(String variableName) {
-		this.variableName = variableName;
-	}
+  /**
+   * Get the name of the HTTP header variable containing the user name.
+   * 
+   * @return The name of the HTTP header variable containing the user name.
+   */
+  public String getVariableName()
+  {
+    return variableName;
+  }
 
-	/**
-	 * If the flag is set to true, users unknown to SCM-Manager are allowed to
-	 * log in.
-	 * 
-	 * @return The flag whether unknown users are allowed to log in.
-	 */
-	public boolean getAllowUnknown() {
-		return allowUnknown;
-	}
+  /**
+   * Set the name of the HTTP header variable containing the user name.
+   * 
+   * @param variableName
+   *          - The name of the HTTP header variable.
+   */
+  public void setVariableName(String variableName)
+  {
+    this.variableName = variableName;
+  }
 
-	/**
-	 * Set the flag whether users unknown to SCM-Manager are allowed to log in.
-	 * 
-	 * @param allowUnknown
-	 *            - If the flag is set to true, users unknown to SCM-Manager are
-	 *            allowed to log in.
-	 */
-	public void setAllowUnknown(boolean allowUnknown) {
-		this.allowUnknown = allowUnknown;
-	}
+  /**
+   * Get the password used for all found users. This password must be set for
+   * existing users, otherwise they can't use the auto-login feature.
+   * 
+   * @return password - The password.
+   */
+  public String getPassword()
+  {
+    return password;
+  }
 
-	/**
-	 * Get the email domain of the user.
-	 * 
-	 * @return The email domain of the user.
-	 */
-	public String getEmailDomain() {
-		return emailDomain;
-	}
+  /**
+   * Set the password used for all users. This password must be set for existing
+   * users, otherwise they can't use the auto-login feature.
+   * 
+   * @param password
+   *          - The new password.
+   */
+  public void setPassword(String password)
+  {
+    this.password = password;
+  }
 
-	/**
-	 * Set the email domain of the user.
-	 * 
-	 * @param emailDomain
-	 *            - The email domain.
-	 */
-	public void setEmailDomain(String emailDomain) {
-		this.emailDomain = emailDomain;
-	}
+  /**
+   * If the flag is set to true, users unknown to SCM-Manager are allowed to log
+   * in.
+   * 
+   * @return The flag whether unknown users are allowed to log in.
+   */
+  public boolean getAllowUnknown()
+  {
+    return allowUnknown;
+  }
+
+  /**
+   * Set the flag whether users unknown to SCM-Manager are allowed to log in.
+   * 
+   * @param allowUnknown
+   *          - If the flag is set to true, users unknown to SCM-Manager are
+   *          allowed to log in.
+   */
+  public void setAllowUnknown(boolean allowUnknown)
+  {
+    this.allowUnknown = allowUnknown;
+  }
+
+  /**
+   * Get the email domain of the user.
+   * 
+   * @return The email domain of the user.
+   */
+  public String getEmailDomain()
+  {
+    return emailDomain;
+  }
+
+  /**
+   * Set the email domain of the user.
+   * 
+   * @param emailDomain
+   *          - The email domain.
+   */
+  public void setEmailDomain(String emailDomain)
+  {
+    this.emailDomain = emailDomain;
+  }
 
 }

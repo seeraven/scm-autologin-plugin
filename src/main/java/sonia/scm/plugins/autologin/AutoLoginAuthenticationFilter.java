@@ -53,71 +53,78 @@ import sonia.scm.web.filter.AutoLoginModule;
  */
 @Singleton
 @Extension
-public class AutoLoginAuthenticationFilter implements AutoLoginModule {
+public class AutoLoginAuthenticationFilter implements AutoLoginModule
+{
 
-	/** the logger for AutoLoginAuthenticationFilter */
-	private static final Logger logger = LoggerFactory
-			.getLogger(AutoLoginAuthenticationFilter.class);
+  /** the logger for AutoLoginAuthenticationFilter */
+  private static final Logger logger = LoggerFactory
+      .getLogger(AutoLoginAuthenticationFilter.class);
 
-	/** the configuration of the plugin */
-	private AutoLoginConfig config;
+  /** the configuration of the plugin */
+  private AutoLoginConfig config;
 
-	/**
-	 * Constructor of the authentication filter.
-	 * 
-	 * @param configuration
-	 *            - The configuration of SCM-Manager.
-	 * @param pluginConfiguration
-	 *            - The configuration of the plugin.
-	 */
-	@Inject
-	public AutoLoginAuthenticationFilter(AutoLoginConfig pluginConfiguration) {
-		this.config = pluginConfiguration;
-	}
+  /**
+   * Constructor of the authentication filter.
+   * 
+   * @param configuration
+   *          - The configuration of SCM-Manager.
+   * @param pluginConfiguration
+   *          - The configuration of the plugin.
+   */
+  @Inject
+  public AutoLoginAuthenticationFilter(AutoLoginConfig pluginConfiguration)
+  {
+    this.config = pluginConfiguration;
+  }
 
-	/**
-	 * Authenticate a user using the given request object. If the user can not
-	 * be authenticated, e.g., because required headers are not set null must be
-	 * returned.
-	 * 
-	 * @param request
-	 *            The HTTP request.
-	 * @param response
-	 *            The HTTP response. Use only if absolutely necessary.
-	 * @param subject
-	 *            The subject object.
-	 * @return Return a User object or null.
-	 */
-	public User authenticate(HttpServletRequest request,
-			HttpServletResponse response, Subject subject) {
-		String headerValue = request.getHeader(config.getVariableName());
-		User user = null;
+  /**
+   * Authenticate a user using the given request object. If the user can not be
+   * authenticated, e.g., because required headers are not set null must be
+   * returned.
+   * 
+   * @param request
+   *          The HTTP request.
+   * @param response
+   *          The HTTP response. Use only if absolutely necessary.
+   * @param subject
+   *          The subject object.
+   * @return Return a User object or null.
+   */
+  public User authenticate(HttpServletRequest request,
+      HttpServletResponse response, Subject subject)
+  {
+    String headerValue = request.getHeader(config.getVariableName());
+    User user = null;
 
-		if (headerValue != null) {
-			String remoteUser = AutoLoginHelper.extractUsername(headerValue);
-			logger.debug(config.getVariableName() + " => " + remoteUser);
+    if (headerValue != null)
+    {
+      String remoteUser = AutoLoginHelper.extractUsername(headerValue);
+      logger.debug(config.getVariableName() + " => " + remoteUser);
 
-			try {
-				subject.login(new UsernamePasswordToken(remoteUser,
-						AutoLoginAuthenticationHandler.USERPASS, request
-								.getRemoteAddr()));
-				user = subject.getPrincipals().oneByType(User.class);
-			} catch (AuthenticationException ex) {
-				logger.warn("Can't login user '" + remoteUser
-						+ "' with password '"
-						+ AutoLoginAuthenticationHandler.USERPASS + "'");
-			}
-		} else {
-			logger.debug("Can't determine auto login using http header variable "
-					+ config.getVariableName());
-		}
+      try
+      {
+        subject.login(new UsernamePasswordToken(remoteUser,
+            config.getPassword(), request.getRemoteAddr()));
+        user = subject.getPrincipals().oneByType(User.class);
+      } catch (AuthenticationException ex)
+      {
+        logger.warn("Can't login user '" + remoteUser + "' with password '"
+            + AutoLoginAuthenticationHandler.USERPASS + "'");
+      }
+    } else
+    {
+      logger.debug("Can't determine auto login using http header variable "
+          + config.getVariableName());
+    }
 
-		if (user != null) {
-			logger.debug("Auto-Login successfull.");
-		} else {
-			logger.debug("Auto-Login failed.");
-		}
+    if (user != null)
+    {
+      logger.debug("Auto-Login successfull.");
+    } else
+    {
+      logger.debug("Auto-Login failed.");
+    }
 
-		return user;
-	}
+    return user;
+  }
 }

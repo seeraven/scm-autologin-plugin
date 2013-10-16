@@ -50,43 +50,49 @@ import java.io.IOException;
  */
 @Singleton
 @Path("config/plugins/autologin")
-public class AutoLoginConfigRessource {
+public class AutoLoginConfigRessource
+{
 
-	/** The authentication handler holding the config. */
-	private AutoLoginAuthenticationHandler authenticationHandler;
+  /** The authentication handler holding the config. */
+  private AutoLoginAuthenticationHandler authenticationHandler;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param authenticationHandler
-	 *            - The AutoLoginAuthenticationHandler.
-	 */
-	@Inject
-	public AutoLoginConfigRessource(
-			AutoLoginAuthenticationHandler authenticationHandler) {
-		this.authenticationHandler = authenticationHandler;
-	}
+  /**
+   * Constructor.
+   * 
+   * @param authenticationHandler
+   *          - The AutoLoginAuthenticationHandler.
+   */
+  @Inject
+  public AutoLoginConfigRessource(
+      AutoLoginAuthenticationHandler authenticationHandler)
+  {
+    this.authenticationHandler = authenticationHandler;
+  }
 
-	/**
-	 * Get the configuration.
-	 * 
-	 * @return The configuration.
-	 */
-	@GET
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public AutoLoginConfig getConfig() {
-		return authenticationHandler.getConfig();
-	}
+  /**
+   * Get the configuration.
+   * 
+   * @return The configuration.
+   */
+  @GET
+  @Produces(
+  { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+  public AutoLoginConfig getConfig()
+  {
+    return authenticationHandler.getConfig();
+  }
 
-	/**
-	 * Set the configuration.
-	 */
-	@POST
-	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response setConfig(@Context UriInfo uriInfo, AutoLoginConfig config)
-			throws IOException {
-		authenticationHandler.storeConfig(config);
-		return Response.created(uriInfo.getRequestUri()).build();
-	}
+  /**
+   * Set the configuration.
+   */
+  @POST
+  @Consumes(
+  { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+  public Response setConfig(@Context UriInfo uriInfo, AutoLoginConfig config)
+      throws IOException
+  {
+    authenticationHandler.storeConfig(config);
+    return Response.created(uriInfo.getRequestUri()).build();
+  }
 
 }

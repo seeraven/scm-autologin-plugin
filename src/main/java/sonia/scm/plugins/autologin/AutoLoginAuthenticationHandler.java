@@ -59,161 +59,176 @@ import sonia.scm.store.StoreFactory;
  */
 @Singleton
 @Extension
-public class AutoLoginAuthenticationHandler implements AuthenticationHandler {
+public class AutoLoginAuthenticationHandler implements AuthenticationHandler
+{
 
-	/** The password used by the AutoLoginAuthenticationFilter. */
-	public static final String USERPASS = "autoLogin";
+  /** The password used by the AutoLoginAuthenticationFilter. */
+  public static final String USERPASS = "autoLogin";
 
-	/** The authentication type. */
-	public static final String TYPE = "autoLogin";
+  /** The authentication type. */
+  public static final String TYPE = "autoLogin";
 
-	/** the logger for AutoLoginAuthenticationHandler */
-	private static final Logger logger = LoggerFactory
-			.getLogger(AutoLoginAuthenticationHandler.class);
+  /** the logger for AutoLoginAuthenticationHandler */
+  private static final Logger logger = LoggerFactory
+      .getLogger(AutoLoginAuthenticationHandler.class);
 
-	/** The configuration of the plugin. */
-	private AutoLoginConfig config;
+  /** The configuration of the plugin. */
+  private AutoLoginConfig config;
 
-	/** The store of the configuration. */
-	private Store<AutoLoginConfig> store;
+  /** The store of the configuration. */
+  private Store<AutoLoginConfig> store;
 
-	/** The user manager. */
-	private UserManager userManager;
+  /** The user manager. */
+  private UserManager userManager;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param userManager
-	 *            - The user manager.
-	 * @param storeFactory
-	 *            - The factory to get the store.
-	 */
-	@Inject
-	public AutoLoginAuthenticationHandler(UserManager userManager,
-			StoreFactory storeFactory) {
-		this.userManager = userManager;
-		store = storeFactory.getStore(AutoLoginConfig.class, TYPE);
-	}
+  /**
+   * Constructor.
+   * 
+   * @param userManager
+   *          - The user manager.
+   * @param storeFactory
+   *          - The factory to get the store.
+   */
+  @Inject
+  public AutoLoginAuthenticationHandler(UserManager userManager,
+      StoreFactory storeFactory)
+  {
+    this.userManager = userManager;
+    store = storeFactory.getStore(AutoLoginConfig.class, TYPE);
+  }
 
-	/**
-	 * Initialize the AutoLoginAuthenticationHandler.
-	 */
-	@Override
-	public void init(SCMContextProvider context) {
-		config = store.get();
+  /**
+   * Initialize the AutoLoginAuthenticationHandler.
+   */
+  @Override
+  public void init(SCMContextProvider context)
+  {
+    config = store.get();
 
-		if (config == null) {
-			config = new AutoLoginConfig();
-		}
-	}
+    if (config == null)
+    {
+      config = new AutoLoginConfig();
+    }
+  }
 
-	/**
-	 * Close the AutoLoginAuthenticationHandler.
-	 */
-	@Override
-	public void close() throws IOException {
-	}
+  /**
+   * Close the AutoLoginAuthenticationHandler.
+   */
+  @Override
+  public void close() throws IOException
+  {
+  }
 
-	/**
-	 * Get the type of the AutoLoginAuthenticationHandler.
-	 */
-	@Override
-	public String getType() {
-		return userManager.getDefaultType();
-	}
+  /**
+   * Get the type of the AutoLoginAuthenticationHandler.
+   */
+  @Override
+  public String getType()
+  {
+    return userManager.getDefaultType();
+  }
 
-	@Override
-	public AuthenticationResult authenticate(HttpServletRequest request,
-			HttpServletResponse response, String username, String password) {
-		AuthenticationResult result = null;
+  @Override
+  public AuthenticationResult authenticate(HttpServletRequest request,
+      HttpServletResponse response, String username, String password)
+  {
+    AuthenticationResult result = null;
 
-		// If the request originated from the AutoLoginAuthenticationFilter...
-		if (USERPASS.equals(password)) {
-			// Search for the user in the user manager
-			User user = userManager.get(username);
+    // If the request originated from the AutoLoginAuthenticationFilter...
+    if (config.getPassword().equals(password))
+    {
+      // Search for the user in the user manager
+      User user = userManager.get(username);
 
-			if (user != null) {
-				// Login user without a password.
-				if (logger.isDebugEnabled()) {
-					logger.debug(
-							"user {} successfully authenticated by auto login plugin",
-							username);
-				}
+      if (user != null)
+      {
+        // Login user without a password.
+        if (logger.isDebugEnabled())
+        {
+          logger.debug(
+              "user {} successfully authenticated by auto login plugin",
+              username);
+        }
 
-				user.setPassword(null);
-				result = new AuthenticationResult(user,
-						AuthenticationState.SUCCESS);
-			} else if (config.getAllowUnknown()) {
-				// Create user when enabled
-				user = createAutoLoginUser(username);
-				result = new AuthenticationResult(user,
-						AuthenticationState.SUCCESS);
+        user.setPassword(null);
+        result = new AuthenticationResult(user, AuthenticationState.SUCCESS);
+      } else if (config.getAllowUnknown())
+      {
+        // Create user when enabled
+        user = createAutoLoginUser(username);
+        result = new AuthenticationResult(user, AuthenticationState.SUCCESS);
 
-				if (logger.isDebugEnabled()) {
-					logger.debug(
-							"user {} successfully created by auto login plugin",
-							username);
-				}
-			}
-		}
+        if (logger.isDebugEnabled())
+        {
+          logger.debug("user {} successfully created by auto login plugin",
+              username);
+        }
+      }
+    }
 
-		if (result == null) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("user {} not authenticated by auto login plugin ",
-						username);
-			}
+    if (result == null)
+    {
+      if (logger.isDebugEnabled())
+      {
+        logger.debug("user {} not authenticated by auto login plugin ",
+            username);
+      }
 
-			result = AuthenticationResult.NOT_FOUND;
-		}
+      result = AuthenticationResult.NOT_FOUND;
+    }
 
-		return result;
-	}
+    return result;
+  }
 
-	/**
-	 * Set the plugin configuration and store it in the store.
-	 * 
-	 * @param config
-	 *            - The plugin configuration.
-	 */
-	public void storeConfig(AutoLoginConfig config) {
-		this.config = config;
-		store.set(config);
-	}
+  /**
+   * Set the plugin configuration and store it in the store.
+   * 
+   * @param config
+   *          - The plugin configuration.
+   */
+  public void storeConfig(AutoLoginConfig config)
+  {
+    this.config = config;
+    store.set(config);
+  }
 
-	/**
-	 * Get the plugin configuration.
-	 * 
-	 * @return The plugin configuration.
-	 */
-	public AutoLoginConfig getConfig() {
-		return config;
-	}
+  /**
+   * Get the plugin configuration.
+   * 
+   * @return The plugin configuration.
+   */
+  public AutoLoginConfig getConfig()
+  {
+    return config;
+  }
 
-	/**
-	 * Set the plugin configuration.
-	 * 
-	 * @param config
-	 *            - The plugin configuration.
-	 */
-	public void setConfig(AutoLoginConfig config) {
-		this.config = config;
-	}
+  /**
+   * Set the plugin configuration.
+   * 
+   * @param config
+   *          - The plugin configuration.
+   */
+  public void setConfig(AutoLoginConfig config)
+  {
+    this.config = config;
+  }
 
-	/**
-	 * Create a new user and save it in the user database.
-	 * 
-	 * @param username
-	 *            - The user name.
-	 * @return The user object.
-	 */
-	private User createAutoLoginUser(String username) {
-		User user = new User();
+  /**
+   * Create a new user and save it in the user database.
+   * 
+   * @param username
+   *          - The user name.
+   * @return The user object.
+   */
+  private User createAutoLoginUser(String username)
+  {
+    User user = new User();
 
-		user.setName(username);
-		user.setDisplayName(username);
-		user.setMail(username + "@" + config.getEmailDomain());
-		user.setPassword(USERPASS);
+    user.setName(username);
+    user.setDisplayName(username);
+    user.setMail(username + "@" + config.getEmailDomain());
+    user.setPassword(USERPASS);
 
-		return user;
-	}
+    return user;
+  }
 }

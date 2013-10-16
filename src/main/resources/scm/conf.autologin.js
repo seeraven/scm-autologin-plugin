@@ -39,6 +39,13 @@ registerGeneralConfigPanel({
 	        	allowBlank: false
 	        },
 	        {
+	        	xtype:      'textfield',
+	        	fieldLabel: 'Password',
+	        	name:       'variable-name',
+	        	helpText:   'The password used for auto login attempts. Existing users must have this password or they will not be able to auto login.',
+	        	allowBlank: false
+	        },
+	        {
 	        	xtype:      'checkbox',
 	            fieldLabel: "Allow Unknown Users",
 	            name:       'allow-unknown',

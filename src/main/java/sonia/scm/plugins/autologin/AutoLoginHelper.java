@@ -34,35 +34,40 @@ package sonia.scm.plugins.autologin;
  * 
  * @author Clemens Rabe
  */
-public class AutoLoginHelper {
+public class AutoLoginHelper
+{
 
-	/**
-	 * Extract the username from the given string. The string contains either
-	 * the username or a certificate DN. In this case, the CN element is
-	 * extracted and returned as the username.
-	 * 
-	 * @param remoteUser
-	 * @return The extracted user name. If the given string is empty, the user
-	 *         name 'anonymous' is returned.
-	 */
-	public static String extractUsername(String remoteUser) {
-		String username = remoteUser;
+  /**
+   * Extract the username from the given string. The string contains either the
+   * username or a certificate DN. In this case, the CN element is extracted and
+   * returned as the username.
+   * 
+   * @param remoteUser
+   * @return The extracted user name. If the given string is empty, the user
+   *         name 'anonymous' is returned.
+   */
+  public static String extractUsername(String remoteUser)
+  {
+    String username = remoteUser;
 
-		// No X_REMOTE_USER variable
-		if (username == null || username.isEmpty()) {
-			username = "anonymous";
-		}
+    // No X_REMOTE_USER variable
+    if (username == null || username.isEmpty())
+    {
+      username = "anonymous";
+    }
 
-		// Check for CN= part
-		if (username.contains("CN=")) {
-			username = username.substring(username.indexOf("CN=") + 3);
+    // Check for CN= part
+    if (username.contains("CN="))
+    {
+      username = username.substring(username.indexOf("CN=") + 3);
 
-			// End with '/' or end of string
-			if (username.contains("/")) {
-				username = username.substring(0, username.indexOf("/"));
-			}
-		}
+      // End with '/' or end of string
+      if (username.contains("/"))
+      {
+        username = username.substring(0, username.indexOf("/"));
+      }
+    }
 
-		return username;
-	}
+    return username;
+  }
 }
