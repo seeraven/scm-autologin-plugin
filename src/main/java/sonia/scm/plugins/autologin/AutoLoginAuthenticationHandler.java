@@ -267,7 +267,7 @@ public class AutoLoginAuthenticationHandler implements AuthenticationHandler
 
     // Do not encrypt password, because this would allow others to
     // login with the common password!
-    user.setPassword(config.getPassword());
+    user.setPassword("autoLogin");
 
     user.setType(TYPE);
 

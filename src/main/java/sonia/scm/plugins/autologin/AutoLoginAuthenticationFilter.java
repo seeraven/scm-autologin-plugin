@@ -105,19 +105,17 @@ public class AutoLoginAuthenticationFilter implements AutoLoginModule
 
       try
       {
-        subject.login(new UsernamePasswordToken(remoteUser,
-            authenticationHandler.getConfig().getPassword(), request
-                .getRemoteAddr()));
+        subject.login(new UsernamePasswordToken(remoteUser, AutoLoginHelper
+            .generateRandomPassword(30), request.getRemoteAddr()));
         user = subject.getPrincipals().oneByType(User.class);
       } catch (AuthenticationException ex)
       {
-        logger.warn("Can't login user '" + remoteUser + "' with password '"
-            + authenticationHandler.getConfig().getPassword() + "'");
+        logger.warn("Can't login user {}", remoteUser);
       }
     } else
     {
-      logger.debug("Can't determine auto login using http header variable "
-          + authenticationHandler.getConfig().getVariableName());
+      logger.debug("Can't determine auto login using http header variable {}",
+          authenticationHandler.getConfig().getVariableName());
     }
 
     if (user != null)

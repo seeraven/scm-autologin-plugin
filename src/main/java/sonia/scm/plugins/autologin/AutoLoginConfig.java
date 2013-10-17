@@ -50,9 +50,6 @@ public class AutoLoginConfig
   @XmlElement(name = "variable-name")
   private String variableName = "X_REMOTE_USER";
 
-  @XmlElement(name = "password")
-  private String password = "autoLogin";
-
   @XmlElement(name = "allow-unknown")
   private boolean allowUnknown = true;
 
@@ -78,29 +75,6 @@ public class AutoLoginConfig
   public void setVariableName(String variableName)
   {
     this.variableName = variableName;
-  }
-
-  /**
-   * Get the password used for all found users. This password must be set for
-   * existing users, otherwise they can't use the auto-login feature.
-   * 
-   * @return password - The password.
-   */
-  public String getPassword()
-  {
-    return password;
-  }
-
-  /**
-   * Set the password used for all users. This password must be set for existing
-   * users, otherwise they can't use the auto-login feature.
-   * 
-   * @param password
-   *          - The new password.
-   */
-  public void setPassword(String password)
-  {
-    this.password = password;
   }
 
   /**

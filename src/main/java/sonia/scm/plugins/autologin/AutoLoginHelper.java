@@ -29,6 +29,8 @@
 
 package sonia.scm.plugins.autologin;
 
+import java.util.Random;
+
 /**
  * Helper for the AutoLogin plugin.
  * 
@@ -69,5 +71,26 @@ public class AutoLoginHelper
     }
 
     return username;
+  }
+
+  /**
+   * Generate a random password string.
+   * 
+   * @param length
+   *          - The length of the password.
+   * @return The random password string.
+   */
+  public static String generateRandomPassword(int length)
+  {
+    Random random = new Random();
+    String charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    char[] text = new char[length];
+    for (int i = 0; i < length; i++)
+    {
+      text[i] = charSet.charAt(random.nextInt(charSet.length()));
+    }
+
+    return new String(text);
   }
 }
