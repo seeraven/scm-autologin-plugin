@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<overrides>
+
+  <override>
+    <bind>sonia.scm.web.security.AuthenticationManager</bind>
+    <to>sonia.scm.plugins.autologin.AutoLoginChainAuthenticationManager</to>
+  </override>
+</overrides>

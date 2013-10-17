@@ -48,7 +48,6 @@ import sonia.scm.web.security.AuthenticationState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sonia.scm.security.EncryptionHandler;
 import sonia.scm.store.Store;
 import sonia.scm.store.StoreFactory;
 
@@ -64,7 +63,7 @@ public class AutoLoginAuthenticationHandler implements AuthenticationHandler
 {
 
   /** The authentication type. */
-  public static final String TYPE = "autoLogin";
+  public static final String TYPE = "xml";
 
   /** the logger for AutoLoginAuthenticationHandler */
   private static final Logger logger = LoggerFactory
@@ -79,9 +78,6 @@ public class AutoLoginAuthenticationHandler implements AuthenticationHandler
   /** The user manager. */
   private UserManager userManager;
 
-  /** Encryption handler. */
-  private EncryptionHandler encryptionHandler;
-
   /**
    * Constructor.
    * 
@@ -92,10 +88,9 @@ public class AutoLoginAuthenticationHandler implements AuthenticationHandler
    */
   @Inject
   public AutoLoginAuthenticationHandler(UserManager userManager,
-      EncryptionHandler encryptionHandler, StoreFactory storeFactory)
+      StoreFactory storeFactory)
   {
     this.userManager = userManager;
-    this.encryptionHandler = encryptionHandler;
     store = storeFactory.getStore(AutoLoginConfig.class, TYPE);
   }
 
@@ -135,48 +130,76 @@ public class AutoLoginAuthenticationHandler implements AuthenticationHandler
   public AuthenticationResult authenticate(HttpServletRequest request,
       HttpServletResponse response, String username, String password)
   {
+    // Extract REMOTE_USER and act only if it is the same as username
+    String headerValue = request.getHeader(getConfig().getVariableName());
+    String remoteUser = null;
+
+    if (headerValue != null)
+    {
+      remoteUser = AutoLoginHelper.extractUsername(headerValue);
+    }
+
+    // No header variable -> return NOT_FOUND
+    if (remoteUser == null)
+    {
+      return AuthenticationResult.NOT_FOUND;
+    }
+
+    // Different user -> return NOT_FOUND
+    if (!remoteUser.equals(username))
+    {
+      if (logger.isDebugEnabled())
+      {
+        logger.debug("remote user is {}, but user {} shall be authenticated",
+            remoteUser, username);
+      }
+
+      return AuthenticationResult.NOT_FOUND;
+    }
+
+    // The request originated from the AutoLoginAuthenticationFilter...
     AuthenticationResult result = null;
 
-    // If the request originated from the AutoLoginAuthenticationFilter...
-    if (config.getPassword().equals(password))
+    // Search for the user in the user manager
+    User user = userManager.get(username);
+
+    if (user != null)
     {
-      // Search for the user in the user manager
-      User user = userManager.get(username);
-
-      if (user != null)
+      if (TYPE.equals(user.getType()))
       {
-        if (TYPE.equals(user.getType()))
-        {
-          // Login user without a password.
-          if (logger.isDebugEnabled())
-          {
-            logger.debug(
-                "user {} successfully authenticated by auto login plugin",
-                username);
-          }
-
-          user.setPassword(null);
-          result = new AuthenticationResult(user, AuthenticationState.SUCCESS);
-        } else
-        {
-          if (logger.isDebugEnabled())
-          {
-            logger.debug("{} is not an {} user", username, TYPE);
-          }
-
-          result = AuthenticationResult.NOT_FOUND;
-        }
-      } else if (config.getAllowUnknown())
-      {
-        // Create user when enabled
-        user = createAutoLoginUser(username);
-        result = new AuthenticationResult(user, AuthenticationState.SUCCESS);
-
+        // Login user without a password.
         if (logger.isDebugEnabled())
         {
-          logger.debug("user {} successfully created by auto login plugin",
+          logger.debug(
+              "user {} successfully authenticated by auto login plugin",
               username);
         }
+
+        user.setPassword(null);
+        result = new AuthenticationResult(user, AuthenticationState.SUCCESS);
+      } else
+      {
+        if (logger.isDebugEnabled())
+        {
+          logger.debug("{} is not an {} user", username, TYPE);
+        }
+
+        result = AuthenticationResult.NOT_FOUND;
+      }
+    } else if (config.getAllowUnknown())
+    {
+      // Create user when enabled
+      user = createAutoLoginUser(username);
+
+      // TODO: Set groups
+      // Set<String> groups = new HashSet<String>();
+      // result = new AuthenticationResult(user, groups);
+      result = new AuthenticationResult(user, AuthenticationState.SUCCESS);
+
+      if (logger.isDebugEnabled())
+      {
+        logger.debug("user {} successfully created by auto login plugin",
+            username);
       }
     }
 
@@ -242,9 +265,9 @@ public class AutoLoginAuthenticationHandler implements AuthenticationHandler
     user.setDisplayName(username);
     user.setMail(username + "@" + config.getEmailDomain());
 
-    // Encrypt password
-    String encryptedPassword = encryptionHandler.encrypt(config.getPassword());
-    user.setPassword(encryptedPassword);
+    // Do not encrypt password, because this would allow others to
+    // login with the common password!
+    user.setPassword(config.getPassword());
 
     user.setType(TYPE);
 
