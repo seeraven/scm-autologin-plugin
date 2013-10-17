@@ -29,7 +29,9 @@
 
 package sonia.scm.plugins.autologin;
 
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * Helper for the AutoLogin plugin.
@@ -92,5 +94,27 @@ public class AutoLoginHelper
     }
 
     return new String(text);
+  }
+
+  /**
+   * Split the given comma separated string and return a set of strings.
+   * 
+   * @param groups
+   *          - The comma separated string
+   * @return The set of strings.
+   */
+  public static Set<String> splitGroups(String groups)
+  {
+    Set<String> groupList = new HashSet<String>();
+
+    for (String element : groups.split(","))
+    {
+      String trimmed = element.trim();
+
+      if (!trimmed.isEmpty())
+        groupList.add(trimmed);
+    }
+
+    return groupList;
   }
 }

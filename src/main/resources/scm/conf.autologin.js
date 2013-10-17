@@ -39,6 +39,13 @@ registerGeneralConfigPanel({
 	        	allowBlank: false
 	        },
 	        {
+	        	xtype:      'textfield',
+	        	fieldLabel: 'Groups',
+	        	name:       'groups',
+	        	helpText:   'A comma separated list of groups added to an auto login authenticated user.',
+	        	allowBlank: true
+	        },
+	        {
 	        	xtype:      'checkbox',
 	            fieldLabel: "Allow Unknown Users",
 	            name:       'allow-unknown',

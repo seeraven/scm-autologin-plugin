@@ -33,6 +33,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import java.io.IOException;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,7 +44,6 @@ import sonia.scm.user.User;
 import sonia.scm.user.UserManager;
 import sonia.scm.web.security.AuthenticationHandler;
 import sonia.scm.web.security.AuthenticationResult;
-import sonia.scm.web.security.AuthenticationState;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +64,9 @@ public class AutoLoginAuthenticationHandler implements AuthenticationHandler
 
   /** The authentication type. */
   public static final String TYPE = "xml";
+
+  /** The type used for the store. */  
+  public static final String STORETYPE = "autoLogin";
 
   /** the logger for AutoLoginAuthenticationHandler */
   private static final Logger logger = LoggerFactory
@@ -91,7 +94,7 @@ public class AutoLoginAuthenticationHandler implements AuthenticationHandler
       StoreFactory storeFactory)
   {
     this.userManager = userManager;
-    store = storeFactory.getStore(AutoLoginConfig.class, TYPE);
+    store = storeFactory.getStore(AutoLoginConfig.class, STORETYPE);
   }
 
   /**
@@ -176,7 +179,12 @@ public class AutoLoginAuthenticationHandler implements AuthenticationHandler
         }
 
         user.setPassword(null);
-        result = new AuthenticationResult(user, AuthenticationState.SUCCESS);
+
+        // Set groups
+        Set<String> groups = AutoLoginHelper.splitGroups(config.getGroups());
+
+        // result = new AuthenticationResult(user, AuthenticationState.SUCCESS);
+        result = new AuthenticationResult(user, groups);
       } else
       {
         if (logger.isDebugEnabled())
@@ -191,10 +199,11 @@ public class AutoLoginAuthenticationHandler implements AuthenticationHandler
       // Create user when enabled
       user = createAutoLoginUser(username);
 
-      // TODO: Set groups
-      // Set<String> groups = new HashSet<String>();
-      // result = new AuthenticationResult(user, groups);
-      result = new AuthenticationResult(user, AuthenticationState.SUCCESS);
+      // Set groups
+      Set<String> groups = AutoLoginHelper.splitGroups(config.getGroups());
+
+      // result = new AuthenticationResult(user, AuthenticationState.SUCCESS);
+      result = new AuthenticationResult(user, groups);
 
       if (logger.isDebugEnabled())
       {

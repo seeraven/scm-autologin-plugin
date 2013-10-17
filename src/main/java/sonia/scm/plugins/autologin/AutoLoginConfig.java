@@ -50,6 +50,9 @@ public class AutoLoginConfig
   @XmlElement(name = "variable-name")
   private String variableName = "X_REMOTE_USER";
 
+  @XmlElement(name = "groups")
+  private String groups = "";
+
   @XmlElement(name = "allow-unknown")
   private boolean allowUnknown = true;
 
@@ -77,6 +80,26 @@ public class AutoLoginConfig
     this.variableName = variableName;
   }
 
+  /**
+   * Get the comma separated list of groups for authenticated users.
+   * 
+   * @return List of groups
+   */
+  public String getGroups()
+  {
+    return groups;
+  }
+  
+  /**
+   * Set the groups of authenticated users.
+   * 
+   * @param groups - Comma separated list of groups.
+   */
+  public void setGroups(String groups)
+  {
+    this.groups = groups;
+  }
+  
   /**
    * If the flag is set to true, users unknown to SCM-Manager are allowed to log
    * in.
