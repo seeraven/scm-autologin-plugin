@@ -63,7 +63,7 @@ public class AutoLoginAuthenticationHandler implements AuthenticationHandler
 {
 
   /** The authentication type. */
-  public static final String TYPE = "xml";
+  public static final String TYPE = "autoLogin";
 
   /** The type used for the store. */  
   public static final String STORETYPE = "autoLogin";

@@ -98,3 +98,16 @@ registerGeneralConfigPanel({
 		 } );
 	 }
 });
+
+/* Enable editing of autoLogin users. */
+Sonia.user.FormPanel.prototype.autoLoginIsReadOnly = Sonia.user.FormPanel.prototype.isReadOnly;
+Ext.override(Sonia.user.FormPanel, {
+   isReadOnly: function(){
+      var readOnly = this.autoLoginIsReadOnly();
+
+      if(this.item != null && this.item.type == 'autoLogin'){
+         readOnly = !this.autoLoginIsReadOnly();
+      }
+      return readOnly;
+   }
+});
