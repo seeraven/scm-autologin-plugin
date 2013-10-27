@@ -19,11 +19,6 @@ with the FakeBasicAuth authentication method. In this case, the X_REMOTE_USER
 variable contains the DN of the client certificate. Here, the CN component
 is extracted and matching user names are authenticated automatically.
 
-IMPORTANT NOTE
-YOU NEED A MODIFIED VERSION OF SCM-MANAGER AVAILABLE ON
-https://bitbucket.org/seeraven/scm-manager
-SEE THE INSTRUCTIONS BELOW FOR MORE INFORMATION
-
 IMPORTANT SECURITY INFORMATION
 THIS PLUGIN IN ONLY MEANT TO BE USED BEHIND A REVERSE PROXY SERVER
 THAT PREVENTS THE END USER OF SETTING THE HEADER VARIABLE HIM SELF 
@@ -52,11 +47,6 @@ done using the following configuration:
     ProxyRequests     Off
     ProxyPreserveHost On
 
-    ProxyPass                  /private/scm/private http://localhost:8080/scm
-    ProxyPassReverse           /private/scm/private http://localhost:8080/scm
-    ProxyPassReverse           /private/scm/private http://your.domain.org:8080/scm
-    ProxyPassReverseCookiePath /scm /private/scm/private
-
 Now you have to configure the location /private/scm/private in more detail:
 
     <Location /private/scm/private>
@@ -72,9 +62,19 @@ Now you have to configure the location /private/scm/private in more detail:
         AuthUserFile         /etc/apache2/private_scm.txt
         Require              valid-user
 
+        ProxyPass                    http://localhost:8080/scm
+        ProxyPassReverse             /scm
+        ProxyPassReverseCookiePath   /scm /private/scm/private
+        ProxyPassReverseCookieDomain localhost:8080 ro.flnet.org
+
+        SetOutputFilter   INFLATE;proxy-html;DEFLATE
+        ProxyHTMLURLMap   /scm/                /private/scm/private/
+        ProxyHTMLURLMap   /private/scm/private /private/scm/private
+        ProxyHTMLExtended On
+
         RewriteEngine On
         RewriteCond %{LA-U:REMOTE_USER} (.+)
-        RewriteRule . - [E=RU:%1]
+        RewriteRule . - [E=RU:%1,NS]
         RequestHeader set X_REMOTE_USER "%{RU}e" env=RU
         RequestHeader unset Authorization
     </Location>
@@ -105,8 +105,8 @@ In addition, you have to uncomment the 'forwarded' option:
   <Set name="forwarded">true</Set>
 
 
-Build and install the seeraven SCM-Manager fork
-===============================================
+Build and install the SCM-Manager
+=================================
 
 You need a recent JDK and Maven 3 to build SCM-Manager from scratch. On
 Ubuntu 12.04+ you can install the Oracle JDK using the following commands:
@@ -121,7 +121,7 @@ Now install Maven3 and Mercurial:
   sudo apt-get install maven mercurial
 
 Clone the source code and build it:
-  hg clone https://bitbucket.org/seeraven/scm-manager
+  hg clone https://bitbucket.org/sdorra/scm-manager
   cd scm-manager
   mvn clean install
 
