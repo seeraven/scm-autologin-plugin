@@ -20,8 +20,17 @@ variable contains the DN of the client certificate. Here, the CN component
 is extracted and matching user names are authenticated automatically.
 
 IMPORTANT SECURITY INFORMATION
-THIS PLUGIN IN ONLY MEANT TO BE USED BEHIND A REVERSE PROXY SERVER
-THAT PREVENTS THE END USER OF SETTING THE HEADER VARIABLE HIM SELF 
+THIS PLUGIN IS ONLY MEANT TO BE USED BEHIND A REVERSE PROXY SERVER
+THAT PREVENTS THE END USER OF SETTING THE HEADER VARIABLE!
+
+
+Requirements
+============
+ - SCM-Manager 1.35+ (currently you have to build the development version)
+ - Apache2 or similar to provide the authentication
+
+Take a look at the project https://bitbucket.org/seeraven/scm-environment for
+ready-to-use installation scripts.
 
 
 Apache2 Configuration
@@ -65,7 +74,7 @@ Now you have to configure the location /private/scm/private in more detail:
         ProxyPass                    http://localhost:8080/scm
         ProxyPassReverse             /scm
         ProxyPassReverseCookiePath   /scm /private/scm/private
-        ProxyPassReverseCookieDomain localhost:8080 ro.flnet.org
+        ProxyPassReverseCookieDomain localhost:8080 your.domain.org
 
         SetOutputFilter   INFLATE;proxy-html;DEFLATE
         ProxyHTMLURLMap   /scm/                /private/scm/private/
