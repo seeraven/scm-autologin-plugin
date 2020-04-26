@@ -6,7 +6,7 @@
   <parent>
     <artifactId>scm-plugins</artifactId>
     <groupId>sonia.scm.plugins</groupId>
-    <version>1.46</version>
+    <version>1.60</version>
     <relativePath>../scm-manager/scm-core/src/main/java/sonia/scm/plugin</relativePath>
   </parent>
 
@@ -16,6 +16,7 @@
   <version>1.0</version>
   <name>${project.artifactId}</name>
   <description>Plugin for SCM-Manager to allow auto-login based on an HTTP header variable.</description>
+  <url>https://github.com/seeraven/scm-autologin-plugin</url>
 
   <dependencies>
 
@@ -43,7 +44,7 @@
       <plugin>
         <groupId>sonia.scm.maven</groupId>
         <artifactId>scm-maven-plugin</artifactId>
-        <version>1.46</version>
+        <version>1.60</version>
         <configuration>
           <loggginConfiguration>src/main/conf/logging.xml</loggginConfiguration>
         </configuration>
