@@ -2,7 +2,7 @@
 # SETTINGS
 # -----------------------------------------------------------------------------
 
-UBUNTU_VERSION     := 18.04
+UBUNTU_VERSION     := 20.04
 IMAGE_TAG          := scm-manager/plugin-buildenv:$(UBUNTU_VERSION)
 CONTAINER_NAME     := scm_plugin_build
 MAKEFILE_DIR       := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
